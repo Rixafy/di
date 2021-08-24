@@ -127,7 +127,7 @@ class Resolver
 
 			$type = Helpers::getReturnType($reflection);
 			if ($type && !class_exists($type) && !interface_exists($type)) {
-				throw new ServiceCreationException(sprintf("Class or interface '%s' not found. Is return type of %s() correct?", $type, Nette\Utils\Callback::toString($entity)));
+				throw new ServiceCreationException(sprintf("Class or interface '%s' not found. Check the return type of %s() method.", $type, Nette\Utils\Callback::toString($entity)));
 			}
 			return $type;
 
@@ -139,7 +139,7 @@ class Resolver
 				throw new ServiceCreationException(
 					interface_exists($entity)
 					? "Interface $entity can not be used as 'factory', did you mean 'implement'?"
-					: "Class $entity not found."
+					: "Class '$entity' not found."
 				);
 			}
 			return $entity;
@@ -205,7 +205,7 @@ class Resolver
 
 			case is_string($entity): // create class
 				if (!class_exists($entity)) {
-					throw new ServiceCreationException("Class $entity not found.");
+					throw new ServiceCreationException("Class '$entity' not found.");
 				} elseif ((new ReflectionClass($entity))->isAbstract()) {
 					throw new ServiceCreationException("Class $entity is abstract.");
 				} elseif (($rm = (new ReflectionClass($entity))->getConstructor()) !== null && !$rm->isPublic()) {
@@ -275,8 +275,8 @@ class Resolver
 		try {
 			$arguments = $this->completeArguments($arguments);
 		} catch (ServiceCreationException $e) {
-			if (!strpos($e->getMessage(), ' (used in')) {
-				$e->setMessage($e->getMessage() . " (used in {$this->entityToString($entity)})");
+			if (!strpos($e->getMessage(), "\nRelated to")) {
+				$e->setMessage($e->getMessage() . "\nRelated to {$this->entityToString($entity)}.");
 			}
 			throw $e;
 		}
@@ -412,18 +412,18 @@ class Resolver
 
 	private function completeException(\Exception $e, Definition $def): ServiceCreationException
 	{
-		if ($e instanceof ServiceCreationException && Strings::startsWith($e->getMessage(), "Service '")) {
+		if ($e instanceof ServiceCreationException && Strings::startsWith($e->getMessage(), "[Service '")) {
 			return $e;
 		}
 
 		$name = $def->getName();
 		$type = $def->getType();
 		if ($name && !ctype_digit($name)) {
-			$message = "Service '$name'" . ($type ? " (type of $type)" : '') . ': ';
+			$message = "[Service '$name'" . ($type ? " of type $type" : '') . "]\n";
 		} elseif ($type) {
-			$message = "Service of type $type: ";
+			$message = "[Service of type $type]\n";
 		} elseif ($def instanceof Definitions\ServiceDefinition && $def->getEntity()) {
-			$message = 'Service (' . $this->entityToString($def->getEntity()) . '): ';
+			$message = '[Service ' . $this->entityToString($def->getEntity(), false) . "]\n";
 		} else {
 			$message = '';
 		}
@@ -437,15 +437,15 @@ class Resolver
 	}
 
 
-	private function entityToString($entity): string
+	private function entityToString($entity, bool $constructor = true): string
 	{
-		$referenceToText = function (Reference $ref): string {
+		$referenceToText = function (Reference $ref): ?string {
 			return $ref->isSelf() && $this->currentService
-				? '@' . $this->currentService->getName()
+				? null
 				: '@' . $ref->getValue();
 		};
 		if (is_string($entity)) {
-			return $entity . '::__construct()';
+			return $entity . ($constructor ? '::__construct()' : '');
 		} elseif ($entity instanceof Reference) {
 			$entity = $referenceToText($entity);
 		} elseif (is_array($entity)) {
@@ -454,10 +454,8 @@ class Resolver
 			}
 			if ($entity[0] instanceof Reference) {
 				$entity[0] = $referenceToText($entity[0]);
-			} elseif (!is_string($entity[0])) {
-				return $entity[1];
 			}
-			return implode('::', $entity);
+			return is_string($entity[0]) ? implode('::', $entity) : $entity[1];
 		}
 		return (string) $entity;
 	}
@@ -556,14 +554,14 @@ class Resolver
 			} catch (MissingServiceException $e) {
 				$res = null;
 			} catch (ServiceCreationException $e) {
-				throw new ServiceCreationException("{$e->getMessage()} (needed by $desc)", 0, $e);
+				throw new ServiceCreationException($e->getMessage() . "\nRequired by $desc.", 0, $e);
 			}
 			if ($res !== null || $parameter->allowsNull()) {
 				return $res;
 			} elseif (class_exists($type) || interface_exists($type)) {
-				throw new ServiceCreationException("Service of type $type needed by $desc not found. Did you add it to configuration file?");
+				throw new ServiceCreationException("Service of type $type required by $desc not found.\nDid you add it to configuration file?");
 			} else {
-				throw new ServiceCreationException("Class $type needed by $desc not found. Check type hint and 'use' statements.");
+				throw new ServiceCreationException("Class '$type' required by $desc not found.\nCheck the parameter type and 'use' statements.");
 			}
 
 		} elseif (
@@ -587,8 +585,10 @@ class Resolver
 				: null;
 
 		} else {
-			$tmp = count($types) > 1 ? 'union' : 'no class';
-			throw new ServiceCreationException("Parameter $desc has $tmp type hint and no default value, so its value must be specified.");
+			$tmp = count($types) > 1
+				? 'union type and no default value'
+				: 'no class type or default value';
+			throw new ServiceCreationException("Parameter $desc has $tmp, so its value must be specified.");
 		}
 	}
 }

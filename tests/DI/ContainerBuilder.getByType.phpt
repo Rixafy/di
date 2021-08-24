@@ -47,7 +47,7 @@ Assert::null($builder->getByType('Child'));
 
 Assert::exception(function () use ($builder) {
 	$builder->getByType('Child', true);
-}, Nette\DI\MissingServiceException::class, "Service of type 'Child' not found.");
+}, Nette\DI\MissingServiceException::class, 'Service of type Child not found.');
 
 Assert::same('two', $builder->getByType('Service2'));
 
@@ -57,7 +57,7 @@ Assert::exception(function () use ($builder) {
 
 Assert::exception(function () use ($builder) {
 	$builder->getByType('unknown', true);
-}, Nette\DI\MissingServiceException::class, "Service of type 'unknown' not found.");
+}, Nette\DI\MissingServiceException::class, "Service of type 'unknown' not found. Check the class name because it cannot be found.");
 
 Assert::null($builder->getByType('unknown'));
 

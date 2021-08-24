@@ -90,9 +90,9 @@ final class AccessorDefinition extends Definition
 			$returnType = Nette\DI\Helpers::getReturnType($method);
 
 			if (!$returnType) {
-				throw new ServiceCreationException("Method $interface::get() has not return type hint or annotation @return.");
+				throw new ServiceCreationException("Method $interface::get() has no return type or annotation @return.");
 			} elseif (!class_exists($returnType) && !interface_exists($returnType)) {
-				throw new ServiceCreationException("Check a type hint or annotation @return of the $interface::get() method, class '$returnType' cannot be found.");
+				throw new ServiceCreationException("Class '$returnType' not found.\nCheck the return type or annotation @return of the $interface::get() method.");
 			}
 			$this->setReference($returnType);
 		}
