@@ -83,7 +83,7 @@ namespace
 			->setFactory('@factory::createArray');
 		$container = createContainer($builder);
 	}, Nette\DI\ServiceCreationException::class, "[Service 'a']
-Class or interface 'array' not found. Is return type of A\\Factory::createArray() correct?");
+Class or interface 'array' not found. Check the return type of A\\Factory::createArray() method.");
 
 	Assert::exception(function () {
 		$builder = new DI\ContainerBuilder;
@@ -93,7 +93,7 @@ Class or interface 'array' not found. Is return type of A\\Factory::createArray(
 			->setFactory('@factory::createCallable');
 		$container = createContainer($builder);
 	}, Nette\DI\ServiceCreationException::class, "[Service 'c']
-Class or interface 'callable' not found. Is return type of A\\Factory::createCallable() correct?");
+Class or interface 'callable' not found. Check the return type of A\\Factory::createCallable() method.");
 
 	Assert::exception(function () {
 		$builder = new DI\ContainerBuilder;
@@ -103,7 +103,7 @@ Class or interface 'callable' not found. Is return type of A\\Factory::createCal
 			->setFactory('@factory::createString');
 		$container = createContainer($builder);
 	}, Nette\DI\ServiceCreationException::class, "[Service 's']
-Class or interface 'string' not found. Is return type of A\\Factory::createString() correct?");
+Class or interface 'string' not found. Check the return type of A\\Factory::createString() method.");
 
 	Assert::exception(function () {
 		$builder = new DI\ContainerBuilder;
@@ -113,7 +113,7 @@ Class or interface 'string' not found. Is return type of A\\Factory::createStrin
 			->setFactory('@factory::createInt');
 		$container = createContainer($builder);
 	}, Nette\DI\ServiceCreationException::class, "[Service 'i']
-Class or interface 'int' not found. Is return type of A\\Factory::createInt() correct?");
+Class or interface 'int' not found. Check the return type of A\\Factory::createInt() method.");
 
 	Assert::exception(function () {
 		$builder = new DI\ContainerBuilder;
@@ -123,7 +123,7 @@ Class or interface 'int' not found. Is return type of A\\Factory::createInt() co
 			->setFactory('@factory::createBool');
 		$container = createContainer($builder);
 	}, Nette\DI\ServiceCreationException::class, "[Service 'b']
-Class or interface 'bool' not found. Is return type of A\\Factory::createBool() correct?");
+Class or interface 'bool' not found. Check the return type of A\\Factory::createBool() method.");
 
 	Assert::exception(function () {
 		$builder = new DI\ContainerBuilder;
@@ -133,7 +133,7 @@ Class or interface 'bool' not found. Is return type of A\\Factory::createBool() 
 			->setFactory('@factory::createFloat');
 		$container = createContainer($builder);
 	}, Nette\DI\ServiceCreationException::class, "[Service 'f']
-Class or interface 'float' not found. Is return type of A\\Factory::createFloat() correct?");
+Class or interface 'float' not found. Check the return type of A\\Factory::createFloat() method.");
 
 	Assert::exception(function () {
 		$builder = new DI\ContainerBuilder;

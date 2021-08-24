@@ -14,7 +14,7 @@ Assert::throws(function () {
 	services:
 		-
 	');
-}, Nette\InvalidStateException::class, '[Service ?]
+}, Nette\DI\ServiceCreationException::class, '[Service ?]
 Factory and type are missing in definition of service.');
 
 
@@ -23,5 +23,5 @@ Assert::throws(function () {
 	services:
 		foo:
 	');
-}, Nette\InvalidStateException::class, "[Service 'foo']
+}, Nette\DI\ServiceCreationException::class, "[Service 'foo']
 Factory and type are missing in definition of service.");
