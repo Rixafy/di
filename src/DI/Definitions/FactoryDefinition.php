@@ -256,7 +256,11 @@ final class FactoryDefinition extends Definition
 
 			} elseif (!$this->resultDefinition->getSetup()) {
 				$hint = Nette\Utils\Helpers::getSuggestion(array_keys($ctorParams), $param->name);
-				throw new ServiceCreationException("Unused parameter \${$param->name} when implementing method $interface::create()" . ($hint ? ", did you mean \${$hint}?" : '.'));
+				throw new ServiceCreationException(sprintf(
+					'Unused parameter $%s when implementing method %s::create()',
+					$param->name,
+					$interface
+				) . ($hint ? ", did you mean \${$hint}?" : '.'));
 			}
 
 			$paramDef = PHP_VERSION_ID < 80000

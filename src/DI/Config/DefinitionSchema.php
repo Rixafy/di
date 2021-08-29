@@ -107,7 +107,12 @@ class DefinitionSchema implements Schema
 			foreach (['class' => 'type', 'dynamic' => 'imported'] as $alias => $original) {
 				if (array_key_exists($alias, $def)) {
 					if (array_key_exists($original, $def)) {
-						throw new Nette\DI\InvalidConfigurationException("Options '$alias' and '$original' are aliases, use only '$original'.");
+						throw new Nette\DI\InvalidConfigurationException(sprintf(
+							"Options '%s' and '%s' are aliases, use only '%s'.",
+							$alias,
+							$original,
+							$original
+						));
 					}
 					$def[$original] = $def[$alias];
 					unset($def[$alias]);
