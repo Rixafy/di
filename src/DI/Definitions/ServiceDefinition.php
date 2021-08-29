@@ -35,6 +35,24 @@ final class ServiceDefinition extends Definition
 	}
 
 
+	public function getDescriptor(): string
+	{
+		$entity = $this->getEntity();
+		if ($entity && $this->isAnonymous() && !$this->getType()) {
+			if ($entity instanceof Reference) {
+				$entity = '@' . $entity->getValue();
+			} elseif (is_array($entity)) {
+				if ($entity[0] instanceof Reference) {
+					$entity[0] = '@' . $entity[0]->getValue();
+				}
+				$entity = is_string($entity[0]) ? implode('::', $entity) : $entity[1];
+			}
+			return "Service $entity";
+		}
+		return parent::getDescriptor();
+	}
+
+
 	/** @deprecated Use setType() */
 	public function setClass(?string $type)
 	{

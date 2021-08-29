@@ -125,7 +125,7 @@ final class DIExtension extends Nette\DI\CompilerExtension
 	private function initializeTaggedServices(): void
 	{
 		foreach (array_filter($this->getContainerBuilder()->findByTag('run')) as $name => $on) {
-			trigger_error("Tag 'run' used in service '$name' definition is deprecated.", E_USER_DEPRECATED);
+			trigger_error(sprintf("[Service '%s']\nTag 'run' is deprecated.", $name), E_USER_DEPRECATED);
 			$this->initialization->addBody('$this->getService(?);', [$name]);
 		}
 	}
